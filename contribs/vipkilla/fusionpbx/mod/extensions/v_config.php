@@ -180,6 +180,7 @@
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$z++;
 		
+	
 	// put the table creation for lua dialplan in here for now
 		$y = 0;
 		$apps[$x]['db'][$z]['table'] = 'v_dialplan_lua_routes';
@@ -234,7 +235,6 @@
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';		
 		$z++;
 		
-		
 		$y = 0;
 		$apps[$x]['db'][$z]['table'] = 'v_dialplan_lua_caller_routes';
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'id';
@@ -275,7 +275,6 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$z++;
-		
 		
 		$y = 0;
 		$apps[$x]['db'][$z]['table'] = 'v_dialplan_lua_time_routes';
@@ -349,7 +348,6 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$z++;
-		
 		
 		$y = 0;
 		$apps[$x]['db'][$z]['table'] = 'v_dialplan_lua_actions';

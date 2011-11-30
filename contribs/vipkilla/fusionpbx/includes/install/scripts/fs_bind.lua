@@ -1,4 +1,5 @@
--- fission.lua
+-- fs_bind.lua
+-- Written by E. Schmidbauer <e.schmidbauer@gmail.com>
 
 -- comment the following line for production:
 --freeswitch.consoleLog("notice", "fission.lua experiment provided params:\n" .. params:serialize() .. "\n")
