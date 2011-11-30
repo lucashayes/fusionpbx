@@ -58,13 +58,13 @@ if ((XML_REQUEST["section"] == "directory") and (req_domain) and (req_user)) the
 	  </section>
 	</document>]]
 	-- comment the following line for production:
-	freeswitch.consoleLog("notice", "Debug from fission.lua, generated XML:\n" .. XML_STRING .. "\n")
+	-- freeswitch.consoleLog("notice", "Debug from fission.lua, generated XML:\n" .. XML_STRING .. "\n")
 	end))
 end
 
 if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then 
-	freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Called number: " .. req_dnumber .. "\n")
-	freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Caller's number: " .. req_cidnum .. "\n")
+	-- freeswitch.consoleLog("notice", "Debug in dialplan section! Called number: " .. req_dnumber .. "\n")
+	-- freeswitch.consoleLog("notice", "Debug in dialplan section! Caller's number: " .. req_cidnum .. "\n")
 	freeswitch.consoleLog("notice", "fission.lua experiment provided params:\n" .. params:serialize() .. "\n")
 
 	local my_query 
@@ -118,7 +118,9 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 			ext_xml = ext_xml .. [[ data="]] .. u.data .. [[" />]]
 		end
 	end))
+	
 	ext_xml = ext_xml .. [[</condition></extension>]]
+	
 	freeswitch.consoleLog("notice", "Debug: " .. ext_xml .. "\n")
 	
 	XML_STRING = [[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
