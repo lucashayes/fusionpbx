@@ -36,7 +36,7 @@ else {
 
 if (count($_GET)>0) {
 	$id = check_str($_GET["id"]);
-	$lua_action_id = $_GET["lua_action_id"];
+	$lua_action_id = base64_decode($_GET["lua_action_id"]);
 	$fc = $_GET["fc"];
 }
 
