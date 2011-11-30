@@ -276,7 +276,10 @@
 		$apps[$x]['db'][2]['fields'][18]['description'] = '';
 		$apps[$x]['db'][2]['fields'][19]['name'] = 'queue_display_extension';
 		$apps[$x]['db'][2]['fields'][19]['type'] = 'text';
-		$apps[$x]['db'][2]['fields'][19]['description'] = '';		
+		$apps[$x]['db'][2]['fields'][19]['description'] = '';
+		$apps[$x]['db'][2]['fields'][20]['name'] = 'lua_action_id';
+		$apps[$x]['db'][2]['fields'][20]['type'] = 'numeric';
+		$apps[$x]['db'][2]['fields'][20]['description'] = '';		
 
 		$apps[$x]['db'][3]['table'] = 'v_call_center_tier';
 		$apps[$x]['db'][3]['fields'][0]['name'] = 'call_center_tier_id';

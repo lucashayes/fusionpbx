@@ -127,6 +127,10 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 	//add or update the database
 	if ($_POST["persistformvar"] != "true") {
 		if ($action == "add") {
+		
+			//
+				$lua_action_id = dialplan_lua_route_add_callcenter($queue_extension,$queue_name);
+				
 			//add the call center queue
 				$sql = "insert into v_call_center_queue ";
 				$sql .= "(";
@@ -148,7 +152,8 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 				$sql .= "queue_abandoned_resume_allowed, ";
 				$sql .= "queue_cid_prefix, ";
 				$sql .= "queue_description, ";
-				$sql .= "queue_display_extension ";
+				$sql .= "queue_display_extension, ";
+				$sql .= "lua_action_id ";
 				$sql .= ")";
 				$sql .= "values ";
 				$sql .= "(";
@@ -170,7 +175,8 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 				$sql .= "'$queue_abandoned_resume_allowed', ";
 				$sql .= "'$queue_cid_prefix', ";
 				$sql .= "'$queue_description', ";
-				$sql .= "'$queue_display_extension' ";
+				$sql .= "'$queue_display_extension', ";
+				$sql .= "'$lua_action_id' ";
 				$sql .= ")";
 				if ($db_type == "sqlite" || $db_type == "mysql" ) {
                         $db->exec(check_sql($sql));
@@ -217,8 +223,6 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 				$sql .= ") ";
 				$db->exec(check_sql($sql));
 				unset($sql);
-				
-				dialplan_lua_route_add_callcenter($queue_extension,$queue_name);
 				
 			//syncrhonize the configuration
 				sync_package_v_call_center();
