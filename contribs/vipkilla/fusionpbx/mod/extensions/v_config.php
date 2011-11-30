@@ -10,13 +10,13 @@
 		$apps[$x]['description']['en'] = 'Used Configure extensions. ';
 
 	//menu details
-                $apps[$x]['menu'][0]['title']['en'] = 'Quick Add';
-                $apps[$x]['menu'][0]['guid'] = 'F893EDFF-B243-3E29-C7C7-6BF6C48441CB';
-                $apps[$x]['menu'][0]['parent_guid'] = 'BC96D773-EE57-0CDD-C3AC-2D91ABA61B55';
-                $apps[$x]['menu'][0]['category'] = 'internal';
-                $apps[$x]['menu'][0]['path'] = '/mod/extensions/v_quickadd.php';
-                $apps[$x]['menu'][0]['groups'][] = 'admin';
-                $apps[$x]['menu'][0]['groups'][] = 'superadmin';
+		$apps[$x]['menu'][0]['title']['en'] = 'Quick Add';
+		$apps[$x]['menu'][0]['guid'] = 'F893EDFF-B243-3E29-C7C7-6BF6C48441CB';
+		$apps[$x]['menu'][0]['parent_guid'] = 'BC96D773-EE57-0CDD-C3AC-2D91ABA61B55';
+		$apps[$x]['menu'][0]['category'] = 'internal';
+		$apps[$x]['menu'][0]['path'] = '/mod/extensions/v_quickadd.php';
+		$apps[$x]['menu'][0]['groups'][] = 'admin';
+		$apps[$x]['menu'][0]['groups'][] = 'superadmin';
 		$apps[$x]['menu'][1]['title']['en'] = 'Extensions';
 		$apps[$x]['menu'][1]['guid'] = 'D3036A99-9A9F-2AD6-A82A-1FE7BEBBE2D3';
 		$apps[$x]['menu'][1]['parent_guid'] = 'BC96D773-EE57-0CDD-C3AC-2D91ABA61B55';
@@ -42,8 +42,8 @@
 		$apps[$x]['permissions'][3]['groups'][] = 'admin';
 		$apps[$x]['permissions'][3]['groups'][] = 'superadmin';
 
-                $apps[$x]['permissions'][4]['name'] = 'extension_toll';
-                $apps[$x]['permissions'][4]['groups'][] = 'superadmin';
+		$apps[$x]['permissions'][4]['name'] = 'extension_toll';
+		$apps[$x]['permissions'][4]['groups'][] = 'superadmin';
 
 	//schema details
 		$z = 0;
@@ -193,6 +193,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
+		$y++;		
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_domain';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
@@ -243,10 +247,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_domain';
-		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
-		$y++;
+		$y++;			
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'caller_route_id';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
@@ -285,10 +289,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_domain';
-		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
-		$y++;
+		$y++;			
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'time_group';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
@@ -301,27 +305,27 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;		
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'starthour';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'start_hour';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'startminute';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'start_minute';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'startsecond';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'start_second';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'endhour';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'end_hour';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'endminute';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'end_minute';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'endsecond';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'end_second';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
@@ -359,10 +363,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_domain';
-		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'v_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
-		$y++;
+		$y++;		
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'application';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';

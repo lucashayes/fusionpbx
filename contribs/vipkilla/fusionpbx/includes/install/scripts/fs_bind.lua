@@ -68,14 +68,16 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 	freeswitch.consoleLog("notice", "fission.lua experiment provided params:\n" .. params:serialize() .. "\n")
 
 	local my_query 
+	local v_id
 	local lua_action_id
 	local caller_route_id
 	local time_route_id
 	local destination_type
 	local route_debug
 	
-	my_query = string.format("select lua_action_id, caller_route_id, time_route_id, destination_type from v_dialplan_lua_routes where enabled='true' and v_domain='%s' and dialed_number='%s' order by lua_order asc limit 1", req_context, req_dnumber)
+	my_query = string.format("select v_id, lua_action_id, caller_route_id, time_route_id, destination_type from v_dialplan_lua_routes where enabled='true' and v_domain='%s' and dialed_number='%s' order by lua_order asc limit 1", req_context, req_dnumber)
 	assert (dbh:query(my_query, function(u)
+		v_id = u.v_id
 		lua_action_id = u.lua_action_id
 		caller_route_id = u.caller_route_id
 		time_route_id = u.time_route_id
@@ -83,7 +85,7 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 		route_debug = "Normal Route Taken. "
 	end))
 	if(lua_time_group) then
-		my_query = "select lua_action_id from v_dialplan_lua_time_routes where v_domain='" .. req_context .. "' and time_group='" .. lua_time_group .. "' and ( starthour<hour(now()) or ( starthour=hour(now()) and startminute<minute(now()) ) or ( starthour=hour(now()) and startminute=minute(now()) and startsecond<=second(now()) ) ) and ( endhour>hour(now()) or ( endhour=hour(now()) and endminute>minute(now()) ) or ( endhour=hour(now()) and endminute=minute(now()) and endsecond>=second(now()) ) ) and days_week like concat('%%,', dayofweek(now()), ',%%') and days_month like concat('%%,', dayofmonth(now()), ',%%') and months like concat('%%,', month(now()), ',%%') and years like concat('%%,', year(now()), ',%%') order by lua_order asc limit 1"
+		my_query = "select lua_action_id from v_dialplan_lua_time_routes where v_id='" .. v_id .. "' and time_group='" .. lua_time_group .. "' and ( start_hour<hour(now()) or ( start_hour=hour(now()) and start_minute<minute(now()) ) or ( start_hour=hour(now()) and start_minute=minute(now()) and start_second<=second(now()) ) ) and ( end_hour>hour(now()) or ( end_hour=hour(now()) and end_minute>minute(now()) ) or ( end_hour=hour(now()) and end_minute=minute(now()) and end_second>=second(now()) ) ) and days_week like concat('%%,', dayofweek(now()), ',%%') and days_month like concat('%%,', day_of_month(now()), ',%%') and months like concat('%%,', month(now()), ',%%') and years like concat('%%,', year(now()), ',%%') order by lua_order asc limit 1"
 		-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
 		assert (dbh:query(my_query, function(u)
 			lua_action_id = u.lua_action_id
@@ -91,7 +93,7 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 		end))
 	end		
 	if (caller_route_id) then
-		my_query = string.format("select lua_action_id from v_dialplan_lua_caller_routes where enabled='true' and v_domain='%s' and caller_route_id='%s' and '%s' like concat(cid_prefix, '%%') order by lua_order asc limit 1", req_context, caller_route_id, req_cidnum)
+		my_query = string.format("select lua_action_id from v_dialplan_lua_caller_routes where enabled='true' and v_id='%s' and caller_route_id='%s' and '%s' like concat(cid_prefix, '%%') order by lua_order asc limit 1", v_id, caller_route_id, req_cidnum)
 		-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
 		assert (dbh:query(my_query, function(u)
 			lua_action_id = u.lua_action_id
@@ -109,7 +111,7 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 	end
 	
 	ext_xml = ext_xml .. [[<condition>]]
-	my_query = string.format("select application, data from v_dialplan_lua_actions where v_domain='%s' and lua_action_id='%s' order by lua_order", req_context, lua_action_id)
+	my_query = string.format("select application, data from v_dialplan_lua_actions where v_id='%s' and lua_action_id='%s' order by lua_order", v_id, lua_action_id)
 	assert (dbh:query(my_query, function(u)
 		ext_xml = ext_xml .. [[<action application="]] .. u.application .. [["]]
 		if (string.len(u.data) == 0) then

@@ -880,181 +880,21 @@ function format_string ($format, $data) {
 		}
 	}
 	
-	if (!function_exists('dialplan_lua_route_exists')) {
-		function dialplan_lua_route_exists($extension) {
-			global $db, $v_id;
-			$sql = "select * from v_dialplan_lua_routes ";
-			$sql .= "where dialed_number = '".$extension."' ";
-			$sql .= "and v_domain in (select v_domain from v_system_settings where v_id='${v_id}')";
-			$prepstatement = $db->prepare(check_sql($sql));
-			$prepstatement->execute();
-			$result = $prepstatement->fetchAll();
-			$resultcount = count($result);
-			if ($resultcount > 0) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-	}
-
-	if (!function_exists('dialplan_lua_get_action_id')) {
-		function dialplan_lua_get_action_id($v_domain) {
-			global $db, $v_id;
-			$sql = "select max(lua_action_id) from v_dialplan_lua_actions ";
-			$sql .= "where v_domain='${v_domain}'";
-			$prepstatement = $db->prepare(check_sql($sql));
-			$prepstatement->execute();
-			$result = $prepstatement->fetchAll();
-			foreach($result as $field) {
-				return $field[0];
-			}
-		}
-	}
-	
-	if (!function_exists('dialplan_lua_insert_action')) {
-		function dialplan_lua_insert_action($lua_action_id, $v_domain, $application, $data, $lua_order) {
-			global $db, $v_id;
-			$sql =  "insert into v_dialplan_lua_actions ( ";
-			$sql .= "lua_action_id, ";
-			$sql .= "v_domain, ";
-			$sql .= "application, ";
-			$sql .= "data, ";
-			$sql .= "lua_order ";
-			$sql .= " ) values ( ";
-			$sql .= "'${lua_action_id}', ";
-			$sql .= "'${v_domain}', ";
-			$sql .= "'${application}', ";
-			$sql .= "'${data}', ";
-			$sql .= "'${lua_order}' ";
-			$sql .= " ) ";
-			$db->exec(check_sql($sql));
-			unset($sql);
-		}
-	}
-	
-	if (!function_exists('dialplan_lua_insert_route')) {
-		function dialplan_lua_insert_route($lua_action_id, $v_domain, $extension, $enabled, $name, $description, $lua_order, $caller_route_id, $time_route_id, $destination_type) {
-			global $db, $v_id;
-			$sql =  "insert into v_dialplan_lua_routes ( ";
-			$sql .= "lua_action_id, ";
-			$sql .= "v_domain, ";
-			$sql .= "dialed_number, ";
-			$sql .= "destination_type, ";
-			$sql .= "enabled, ";
-			$sql .= "name, ";
-			$sql .= "description, ";
-			$sql .= "lua_order, ";
-			$sql .= "caller_route_id, ";
-			$sql .= "time_route_id ";
-			$sql .= " ) values ( ";
-			$sql .= "'${lua_action_id}', ";
-			$sql .= "'${v_domain}', ";
-			$sql .= "'${extension}', ";
-			$sql .= "'${destination_type}', ";
-			$sql .= "'${enabled}', ";
-			$sql .= "'${name}', ";
-			$sql .= "'${description}', ";
-			$sql .= "'${lua_order}', ";
-			$sql .= "'${caller_route_id}', ";
-			$sql .= "'${time_route_id}' ";
-			$sql .= " ) ";
-			$db->exec(check_sql($sql));
-			unset($sql);
-		}
-	}
-	
-	if (!function_exists('dialplan_lua_route_add_extension')) {
-		function dialplan_lua_route_add_extension($extension) {
-			global $db, $v_id;
-			if (strlen($extension) == 0) { return false; }
-			if (!dialplan_lua_route_exists($extension)) {
-				$sql = "select v_domain, v_time_zone from v_system_settings where v_id='${v_id}'";
-				$prepstatement = $db->prepare(check_sql($sql));
-				$prepstatement->execute();
-				$res = $prepstatement->fetchAll();
-				foreach($res as $field) {
-					$v_domain = $field["v_domain"];
-					$time_zone = $field["v_time_zone"];
-				}
-				unset($nsql);
-				$i=0;				
-				$lua_action_id = dialplan_lua_get_action_id($v_domain);
-				$lua_action_id++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "dialed_extension=${extension}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "export", "dialed_extension=${extension}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "bind_meta_app", "1 b s execute_extension::dx XML features", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "bind_meta_app", "2 b s record_session::$\${recordings_dir}/archive/\${strftime(%Y)}/\${strftime(%b)}/\${strftime(%d)}/\${uuid}.wav", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "bind_meta_app", "3 b s execute_extension::cf XML features", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "bind_meta_app", "4 b s execute_extension::att_xfer XML features", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "ringback=\${us-ring}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "transfer_ringback=$\${hold_music}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "call_timeout=30", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "continue_on_fail=true", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "hangup_after_bridge=true", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "hash", "insert/\${domain_name}-call_return/\${dialed_extension}/\${caller_id_number}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "hash", "insert/\${domain_name}-last_dial_ext/\${dialed_extension}/\${uuid}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "called_party_callgroup=\${user_data(\${dialed_extension}@\${domain_name} var callgroup)}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "hash", "insert/\${domain_name}-last_dial/\${called_party_callgroup}/\${uuid}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "bridge", "user/\${user_data(\${destination_number}@\${domain_name} attr id)}@\${domain_name}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "answer", "", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "sleep", "1000", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "voicemail", "default \${domain_name} \${dialed_extension}", $i);
-				dialplan_lua_insert_route($lua_action_id, $v_domain, $extension, "true", "Extension", "Extension", 0, 0, 0, "extension");
-			} //end if !dialplan_lua_route_exists
-		} //end function definition
-	} //end function_exists	
-	
-	if (!function_exists('dialplan_lua_route_add_callcenter')) {
-		function dialplan_lua_route_add_callcenter($extension, $queue_name) {
-			global $db, $v_id;
-			if (strlen($extension) == 0) { return false; }
-			if (!dialplan_lua_route_exists($extension)) {
-				$sql = "select v_domain, v_time_zone from v_system_settings where v_id='${v_id}'";
-				$prepstatement = $db->prepare(check_sql($sql));
-				$prepstatement->execute();
-				$res = $prepstatement->fetchAll();
-				foreach($res as $field) {
-					$v_domain = $field["v_domain"];
-					$time_zone = $field["v_time_zone"];
-				}
-				unset($nsql);
-				$i=0;				
-				$lua_action_id = dialplan_lua_get_action_id($v_domain);
-				$lua_action_id++;
-				$callcenter = $queue_name . "@" . $v_domain;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "hangup_after_bridge=true", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "set", "caller_id_name=#\${caller_id_name}", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "system", "mkdir -p $\${base_dir}/recordings/archive/\${strftime(%Y)}/\${strftime(%b)}/\${strftime(%d)}/", $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "callcenter", $callcenter, $i);
-				$i++;
-				dialplan_lua_insert_action($lua_action_id, $v_domain, "hangup", "", $i);
-				$i++;
-				if(strlen($extension)>0) 
-					dialplan_lua_insert_route($lua_action_id, $v_domain, $extension, "true", "Callcenter", "Callcenter", 0, 0, 0, "callcenter");
-			} //end if !dialplan_lua_route_exists
-		} //end function definition
+	if (!function_exists('dialplan_lua_route_exists')) {		function dialplan_lua_route_exists($extension) {			global $db, $v_id;			$sql = "select * from v_dialplan_lua_routes ";			$sql .= "where dialed_number = '".$extension."' ";			$sql .= "and v_id = '${v_id}')";			$prepstatement = $db->prepare(check_sql($sql));			$prepstatement->execute();			$result = $prepstatement->fetchAll();			$resultcount = count($result);			if ($resultcount > 0) {				return true;			}			else {				return false;			}		}	}
+	if (!function_exists('dialplan_lua_get_action_id')) {		function dialplan_lua_get_action_id($v_id) {			global $db;			$sql = "select max(lua_action_id) from v_dialplan_lua_actions ";			$sql .= "where v_domain='${v_id}'";			$prepstatement = $db->prepare(check_sql($sql));			$prepstatement->execute();			$result = $prepstatement->fetchAll();			foreach($result as $field) {				return $field[0];			}		}	}	
+	if (!function_exists('dialplan_lua_insert_action')) {
+		function dialplan_lua_insert_action($lua_action_id, $v_id, $application, $data, $lua_order) {			global $db;			$sql =  "insert into v_dialplan_lua_actions ( ";			$sql .= "lua_action_id, ";			$sql .= "v_id, ";			$sql .= "application, ";			$sql .= "data, ";			$sql .= "lua_order ";			$sql .= " ) values ( ";			$sql .= "'${lua_action_id}', ";			$sql .= "'${v_id}', ";			$sql .= "'${application}', ";			$sql .= "'${data}', ";			$sql .= "'${lua_order}' ";			$sql .= " ) ";			$db->exec(check_sql($sql));			unset($sql);		}	}
+	if (!function_exists('dialplan_lua_insert_route')) {		function dialplan_lua_insert_route($lua_action_id, $v_id, $extension, $enabled, $name, $description, $lua_order, $caller_route_id, $time_route_id, $destination_type) {			global $db, $v_id;			$sql = "select v_domain, v_time_zone from v_system_settings where v_id='${v_id}'";			$prepstatement = $db->prepare(check_sql($sql));			$prepstatement->execute();			$res = $prepstatement->fetchAll();			foreach($res as $field) {				$v_domain = $field["v_domain"];				$time_zone = $field["v_time_zone"];			}			unset($nsql);						$sql =  "insert into v_dialplan_lua_routes ( ";			$sql .= "lua_action_id, ";			$sql .= "v_id, ";			$sql .= "v_domain, ";			$sql .= "dialed_number, ";			$sql .= "destination_type, ";			$sql .= "enabled, ";			$sql .= "name, ";			$sql .= "description, ";			$sql .= "lua_order, ";			$sql .= "caller_route_id, ";			$sql .= "time_route_id ";			$sql .= " ) values ( ";			$sql .= "'${lua_action_id}', ";			$sql .= "'${v_id}', ";			$sql .= "'${v_domain}', ";			$sql .= "'${extension}', ";			$sql .= "'${destination_type}', ";			$sql .= "'${enabled}', ";			$sql .= "'${name}', ";			$sql .= "'${description}', ";			$sql .= "'${lua_order}', ";			$sql .= "'${caller_route_id}', ";			$sql .= "'${time_route_id}' ";			$sql .= " ) ";			$db->exec(check_sql($sql));			unset($sql);		}	}	
+	if (!function_exists('dialplan_lua_route_add_extension')) {		function dialplan_lua_route_add_extension($extension) {			global $db, $v_id;			if (strlen($extension) == 0) { return false; }			if (!dialplan_lua_route_exists($extension)) {				$i=0;								$lua_action_id = dialplan_lua_get_action_id($v_id);				$lua_action_id++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "dialed_extension=${extension}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "export", "dialed_extension=${extension}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "bind_meta_app", "1 b s execute_extension::dx XML features", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "bind_meta_app", "2 b s record_session::$\${recordings_dir}/archive/\${strftime(%Y)}/\${strftime(%b)}/\${strftime(%d)}/\${uuid}.wav", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "bind_meta_app", "3 b s execute_extension::cf XML features", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "bind_meta_app", "4 b s execute_extension::att_xfer XML features", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "ringback=\${us-ring}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "transfer_ringback=$\${hold_music}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "call_timeout=30", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "continue_on_fail=true", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "hangup_after_bridge=true", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "hash", "insert/\${domain_name}-call_return/\${dialed_extension}/\${caller_id_number}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "hash", "insert/\${domain_name}-last_dial_ext/\${dialed_extension}/\${uuid}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "called_party_callgroup=\${user_data(\${dialed_extension}@\${domain_name} var callgroup)}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "hash", "insert/\${domain_name}-last_dial/\${called_party_callgroup}/\${uuid}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "bridge", "user/\${user_data(\${destination_number}@\${domain_name} attr id)}@\${domain_name}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "answer", "", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "sleep", "1000", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "voicemail", "default \${domain_name} \${dialed_extension}", $i);				dialplan_lua_insert_route($lua_action_id, $v_id, $extension, "true", "Extension", "Extension", 0, 0, 0, "extension");			} //end if !dialplan_lua_route_exists		} //end function definition	} //end function_exists	
+	if (!function_exists('dialplan_lua_route_add_callcenter')) {
+		function dialplan_lua_route_add_callcenter($extension, $queue_name) {			global $db, $v_id;			if (strlen($extension) == 0) { return false; }			if (!dialplan_lua_route_exists($extension)) {				$sql = "select v_domain, v_time_zone from v_system_settings where v_id='${v_id}'";				$prepstatement = $db->prepare(check_sql($sql));				$prepstatement->execute();				$res = $prepstatement->fetchAll();				foreach($res as $field) {					$v_domain = $field["v_domain"];					$time_zone = $field["v_time_zone"];				}				unset($nsql);				$i=0;								$lua_action_id = dialplan_lua_get_action_id($v_id);				$lua_action_id++;				$callcenter = $queue_name . "@" . $v_domain;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "hangup_after_bridge=true", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "set", "caller_id_name=#\${caller_id_name}", $i);				$i++;				dialplan_lua_insert_action($lua_action_id, $v_id, "system", "mkdir -p $\${base_dir}/recordings/archive/\${strftime(%Y)}/\${strftime(%b)}/\${strftime(%d)}/", $i);				$i++;
+				dialplan_lua_insert_action($lua_action_id, $v_id, "callcenter", $callcenter, $i);
+				$i++;
+				dialplan_lua_insert_action($lua_action_id, $v_id, "hangup", "", $i);
+				$i++;
+				if(strlen($extension)>0) 
+					dialplan_lua_insert_route($lua_action_id, $v_id, $extension, "true", "Callcenter", "Callcenter", 0, 0, 0, "callcenter");
+			} //end if !dialplan_lua_route_exists
+		} //end function definition
 	} //end function_exists		
 ?>
