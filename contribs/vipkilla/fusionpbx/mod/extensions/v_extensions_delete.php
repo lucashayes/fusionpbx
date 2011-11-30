@@ -22,6 +22,7 @@
 
 	Contributor(s):
 	Mark J Crane <markjcrane@fusionpbx.com>
+	E. Schmidbauer <e.schmidbauer@gmail.com>
 */
 include "root.php";
 require_once "includes/config.php";
