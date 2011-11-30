@@ -37,19 +37,22 @@ else {
 
 if (count($_GET)>0) {
 	$id = $_GET["id"];
+	$lua_action_id = $_GET["lua_action_id"];
 	$fc = $_GET["fc"];
 }
 
-//delete the extension
-	if (strlen($id)>0) {
+//delete the extension and lua_route for extension
+	if ((strlen($id)>0) && strlen($lua_action_id)) {
 		$sql = "";
 		$sql .= "delete from v_extensions ";
 		$sql .= "where v_id = '$v_id' ";
 		$sql .= "and extension_id = '$id' ";
+		$sql .= "and lua_action_id = '$lua_action_id' ";
 		$prepstatement = $db->prepare(check_sql($sql));
 		$prepstatement->execute();
 		unset($sql);
-
+		
+		dialplan_lua_delete_route($lua_action_id);
 		//syncrhonize configuration
 		sync_package_v_extensions();
 	}
