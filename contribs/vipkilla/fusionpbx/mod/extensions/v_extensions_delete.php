@@ -42,7 +42,7 @@ if (count($_GET)>0) {
 }
 
 //delete the extension and lua_route for extension
-	if ((strlen($id)>0) && strlen($lua_action_id)) {
+	if ((strlen($id)>0) && strlen($lua_action_id)>0) {
 		$sql = "";
 		$sql .= "delete from v_extensions ";
 		$sql .= "where v_id = '$v_id' ";

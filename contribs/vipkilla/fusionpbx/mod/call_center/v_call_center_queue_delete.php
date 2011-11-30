@@ -36,10 +36,11 @@ else {
 
 if (count($_GET)>0) {
 	$id = check_str($_GET["id"]);
+	$lua_action_id = $_GET["lua_action_id"];
 	$fc = $_GET["fc"];
 }
 
-if (strlen($id)>0) {
+if ((strlen($id)>0) && strlen($lua_action_id)>0) {
 	$sql = "";
 	$sql .= "delete from v_call_center_queue ";
 	$sql .= "where v_id = '$v_id' ";
@@ -47,6 +48,8 @@ if (strlen($id)>0) {
 	$prep_statement = $db->prepare(check_sql($sql));
 	$prep_statement->execute();
 	unset($sql);
+	
+	dialplan_lua_delete_route($lua_action_id);	
 }
 
 if (strlen($fc)>0) {
