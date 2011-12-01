@@ -2507,22 +2507,6 @@ function outbound_route_to_bridge ($destination_number) {
 //	echo "bridge: ".$bridge."<br />";
 //}
 
-function extension_exists($extension) {
-	global $db, $v_id;
-	$sql = "";
-	$sql .= " select * from v_extensions ";
-	$sql .= "where v_id = '$v_id' ";
-	$sql .= "and extension = '$extension' ";
-	$sql .= "and enabled = 'true' ";
-	$result = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-	if (count($result) > 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 function sync_package_v_hunt_group() {
 
 	//Hunt Group Lua Notes:
