@@ -38,6 +38,7 @@ else {
 	if (isset($_REQUEST["id"])) {
 		$action = "update";
 		$call_center_queue_id = check_str($_REQUEST["id"]);
+		$lua_action_id = base64_decode($_REQUEST['lua_action_id']);
 		$fc = check_str($_REQUEST["fc"]);
 	}
 	else {
@@ -48,6 +49,7 @@ else {
 	if (count($_POST)>0) {
 		//$v_id = check_str($_POST["v_id"]);
 		$queue_name = check_str($_POST["queue_name"]);
+		$lua_action_id = check_str($_POST["lua_action_id"]);
 		$queue_extension = check_str($_POST["queue_extension"]);
 		$queue_strategy = check_str($_POST["queue_strategy"]);
 		$queue_moh_sound = check_str($_POST["queue_moh_sound"]);
@@ -78,6 +80,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 	$msg = '';
 	if ($action == "update") {
 		$call_center_queue_id = check_str($_POST["call_center_queue_id"]);
+		$lua_action_id = base64_decode($_REQUEST['lua_action_id']);
 	}
 
 	//check for all required data
@@ -272,6 +275,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 				$db->exec(check_sql($sql));
 				unset($sql);
 
+				dialplan_lua_route_update_callcenter($lua_action_id, $queue_extension, $queue_name);
 			//syncrhonize the configuration
 				sync_package_v_call_center();
 
@@ -309,6 +313,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 		$result = $prep_statement->fetchAll();
 		foreach ($result as &$row) {
 			$queue_name = $row["queue_name"];
+			$lua_action_id = $row["lua_action_id"];
 			$queue_extension = $row["queue_extension"];
 			$queue_strategy = $row["queue_strategy"];
 			$queue_moh_sound = $row["queue_moh_sound"];
@@ -400,6 +405,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 		echo "	<input class='formfld' type='text' name='queue_extension' maxlength='255' value=\"$queue_extension\">\n";
 	else
 		echo "	<input class='formfld' type='text' name='queue_extension' maxlength='255' value=\"\">\n";
+	echo "	<input class='formfld' type='hidden' name='lua_action_id' maxlength='255' value=\"${lua_action_id}\">\n";
 	echo "<br />\n";
 	echo "Enter the extension number.\n";
 	echo "</td>\n";

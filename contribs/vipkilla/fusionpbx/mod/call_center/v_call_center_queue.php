@@ -153,7 +153,7 @@ require_once "includes/paging.php";
 			echo "	<td valign='top' class='".$row_style[$c]."'>".$row[queue_description]."&nbsp;</td>\n";
 			echo "	<td valign='top' align='right'>\n";
 			if (permission_exists('call_center_queues_edit')) {
-				echo "		<a href='v_call_center_queue_edit.php?id=".$row[call_center_queue_id]."' alt='edit'>$v_link_label_edit</a>\n";
+				echo "		<a href='v_call_center_queue_edit.php?id=".$row[call_center_queue_id]."&lua_action_id=".base64_encode($row[lua_action_id])."' alt='edit'>$v_link_label_edit</a>\n";
 			}
 			if (permission_exists('call_center_queues_delete')) {
 				echo "		<a href='v_call_center_queue_delete.php?id=".$row[call_center_queue_id]."&lua_action_id=".base64_encode($row[lua_action_id])."' alt='delete' onclick=\"return confirm('Do you really want to delete this?')\">$v_link_label_delete</a>\n";
