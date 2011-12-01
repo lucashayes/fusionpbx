@@ -80,7 +80,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 	$msg = '';
 	if ($action == "update") {
 		$call_center_queue_id = check_str($_POST["call_center_queue_id"]);
-		$lua_action_id = base64_decode($_REQUEST['lua_action_id']);
+		$lua_action_id = $_POST['lua_action_id'];
 	}
 
 	//check for all required data
