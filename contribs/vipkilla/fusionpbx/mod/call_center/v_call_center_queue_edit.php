@@ -131,7 +131,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 	if ($_POST["persistformvar"] != "true") {
 		if ($action == "add") {
 		
-			//
+			//add a lua dialplan route to callcenter
 				$lua_action_id = dialplan_lua_route_add_callcenter($queue_extension,$queue_name);
 				
 			//add the call center queue
