@@ -75,8 +75,9 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 	local time_route_id
 	local destination_type
 	local route_debug
+	local ext_xml = [[<extension name="lua_generated">]]	
 	
-	my_query = string.format("select v_id, lua_action_id, caller_route_id, time_route_id, destination_type from v_dialplan_lua_routes where enabled='true' and v_domain='%s' and dialed_number='%s' order by lua_order asc limit 1", req_context, req_dnumber)
+	my_query = string.format("select v_id, lua_action_id, caller_route_id, time_route_id, destination_type from v_dialplan_lua_routes where enabled='true' and v_domain='%s' and dialed_number='%s' order by lua_order asc", req_context, req_dnumber)
 	assert (dbh:query(my_query, function(u)
 		v_id = u.v_id
 		lua_action_id = u.lua_action_id
@@ -84,55 +85,55 @@ if ((XML_REQUEST["section"] == "dialplan") and (req_context)) then
 		time_route_id = u.time_route_id
 		destination_type = u.destination_type
 		route_debug = "Normal Route Taken. "
-	end))
-	if(lua_time_group) then
-		my_query = "select lua_action_id from v_dialplan_lua_time_routes where v_id='" .. v_id .. "' and time_group='" .. lua_time_group .. "' and ( start_hour<hour(now()) or ( start_hour=hour(now()) and start_minute<minute(now()) ) or ( start_hour=hour(now()) and start_minute=minute(now()) and start_second<=second(now()) ) ) and ( end_hour>hour(now()) or ( end_hour=hour(now()) and end_minute>minute(now()) ) or ( end_hour=hour(now()) and end_minute=minute(now()) and end_second>=second(now()) ) ) and days_week like concat('%%,', dayofweek(now()), ',%%') and days_month like concat('%%,', dayofmonth(now()), ',%%') and months like concat('%%,', month(now()), ',%%') and years like concat('%%,', year(now()), ',%%') order by lua_order asc limit 1"
-		-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
-		assert (dbh:query(my_query, function(u)
-			lua_action_id = u.lua_action_id
-			route_debug = "Time Route Taken. "
-		end))
-	end		
-	if (caller_route_id) then
-		my_query = string.format("select lua_action_id from v_dialplan_lua_caller_routes where enabled='true' and v_id='%s' and caller_route_id='%s' and '%s' like concat(cid_prefix, '%%') order by lua_order asc limit 1", v_id, caller_route_id, req_cidnum)
-		-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
-		assert (dbh:query(my_query, function(u)
-			lua_action_id = u.lua_action_id
-			route_debug = "Caller Route Taken. "
-		end))
-	end
 	
-	freeswitch.consoleLog("notice", "Debug in dialplan section!!!! " .. route_debug .." Final Action: " .. lua_action_id .. "\n")
-	
-	local ext_xml = [[<extension name="lua_generated">]]
-	
-	if (destination_type == "callcenter") then
-		-- need to remove the caller id prefix for call center so that it can be re-attached with an updated one
-		ext_xml = ext_xml .. [[<condition field="${caller_id_name}" expression="^([^#]+#)(.*)$" break="never" ><action application="set" data="caller_id_name=$2" /></condition>]]
-	end
-	
-	ext_xml = ext_xml .. [[<condition>]]
-	my_query = string.format("select application, data from v_dialplan_lua_actions where v_id='%s' and lua_action_id='%s' order by lua_order", v_id, lua_action_id)
-	assert (dbh:query(my_query, function(u)
-		ext_xml = ext_xml .. [[<action application="]] .. u.application .. [["]]
-		if (string.len(u.data) == 0) then
-			ext_xml = ext_xml .. [[ />]]
-		else
-			ext_xml = ext_xml .. [[ data="]] .. u.data .. [[" />]]
+		if(lua_time_group) then
+			my_query = "select lua_action_id from v_dialplan_lua_time_routes where v_id='" .. v_id .. "' and time_group='" .. lua_time_group .. "' and ( start_hour<hour(now()) or ( start_hour=hour(now()) and start_minute<minute(now()) ) or ( start_hour=hour(now()) and start_minute=minute(now()) and start_second<=second(now()) ) ) and ( end_hour>hour(now()) or ( end_hour=hour(now()) and end_minute>minute(now()) ) or ( end_hour=hour(now()) and end_minute=minute(now()) and end_second>=second(now()) ) ) and days_week like concat('%%,', dayofweek(now()), ',%%') and days_month like concat('%%,', dayofmonth(now()), ',%%') and months like concat('%%,', month(now()), ',%%') and years like concat('%%,', year(now()), ',%%') order by lua_order asc limit 1"
+			-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
+			assert (dbh:query(my_query, function(u)
+				lua_action_id = u.lua_action_id
+				route_debug = "Time Route Taken. "
+			end))
+		end		
+		if (caller_route_id) then
+			my_query = string.format("select lua_action_id from v_dialplan_lua_caller_routes where enabled='true' and v_id='%s' and caller_route_id='%s' and '%s' like concat(cid_prefix, '%%') order by lua_order asc limit 1", v_id, caller_route_id, req_cidnum)
+			-- freeswitch.consoleLog("notice", "Debug in dialplan section!!!! Time SQL: " .. my_query .. "\n")
+			assert (dbh:query(my_query, function(u)
+				lua_action_id = u.lua_action_id
+				route_debug = "Caller Route Taken. "
+			end))
 		end
+		
+		freeswitch.consoleLog("notice", "Debug in dialplan section!!!! " .. route_debug .." Final Action: " .. lua_action_id .. "\n")
+		
+		if (destination_type == "callcenter") then
+			-- need to remove the caller id prefix for call center so that it can be re-attached with an updated one
+			ext_xml = ext_xml .. [[<condition field="${caller_id_name}" expression="^([^#]+#)(.*)$" break="never" ><action application="set" data="caller_id_name=$2" /></condition>]]
+		end
+		
+		ext_xml = ext_xml .. [[<condition>]]
+		my_query = string.format("select application, data from v_dialplan_lua_actions where v_id='%s' and lua_action_id='%s' order by lua_order", v_id, lua_action_id)
+		assert (dbh:query(my_query, function(u)
+			ext_xml = ext_xml .. [[<action application="]] .. u.application .. [["]]
+			if (string.len(u.data) == 0) then
+				ext_xml = ext_xml .. [[ />]]
+			else
+				ext_xml = ext_xml .. [[ data="]] .. u.data .. [[" />]]
+			end
+		end))
+		
+		ext_xml = ext_xml .. [[</condition></extension>]]
+		
+		freeswitch.consoleLog("notice", "Debug: " .. ext_xml .. "\n")
+		
 	end))
-	
-	ext_xml = ext_xml .. [[</condition></extension>]]
-	
-	freeswitch.consoleLog("notice", "Debug: " .. ext_xml .. "\n")
-	
-	XML_STRING = [[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-	<document type="freeswitch/xml">
-	  <section name="dialplan" description="FissionPBX">
-	    <context name="]] .. req_context .. [[">
-	      ]] .. ext_xml .. [[		
-	    </context>
-	  </section>
-	</document>]]
+	XML_STRING = [[
+		<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+		<document type="freeswitch/xml">
+		  <section name="dialplan" description="FissionPBX">
+			<context name="]] .. req_context .. [[">
+			  ]] .. ext_xml .. [[		
+			</context>
+		  </section>
+		</document>]]
 end
 
