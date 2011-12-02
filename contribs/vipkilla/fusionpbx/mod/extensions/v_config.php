@@ -194,6 +194,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type']['mysql'] = 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'lua_route_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
+		$y++;		
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'lua_action_id';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
