@@ -147,6 +147,10 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'hold_music';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
+		$y++;		
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'auth_acl';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';

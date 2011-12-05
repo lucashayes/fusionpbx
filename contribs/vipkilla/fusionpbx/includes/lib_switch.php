@@ -1921,6 +1921,9 @@ function sync_package_v_extensions() {
 			}
 			$tmpxml .= "    </params>\n";
 			$tmpxml .= "    <variables>\n";
+			if (strlen($row['hold_music']) > 0) {
+				$tmpxml .= "      <variable name=\"hold_music\" value=\"" . $row['hold_music'] . "\"/>\n";
+			}
 			$tmpxml .= "      <variable name=\"toll_allow\" value=\"" . $row['toll_allow'] . "\"/>\n";
 			if (strlen($v_account_code) > 0) {
 				$tmpxml .= "      <variable name=\"accountcode\" value=\"" . $v_account_code . "\"/>\n";
@@ -2506,6 +2509,22 @@ function outbound_route_to_bridge ($destination_number) {
 //foreach ($bridge_array as &$bridge) {
 //	echo "bridge: ".$bridge."<br />";
 //}
+
+function extension_exists($extension) {
+	global $db, $v_id;
+	$sql = "";
+	$sql .= " select * from v_extensions ";
+	$sql .= "where v_id = '$v_id' ";
+	$sql .= "and extension = '$extension' ";
+	$sql .= "and enabled = 'true' ";
+	$result = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+	if (count($result) > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 function sync_package_v_hunt_group() {
 
@@ -4928,11 +4947,8 @@ function sync_package_v_public_includes() {
 			$extension_name = $row['extensionname'];
 			$extension_name = str_replace(" ", "_", $extension_name);
 			$extension_name = preg_replace("/[\*\:\\/\<\>\|\'\"\?]/", "", $extension_name);
-			// Added by T_Dot_Zilla --- put caller routes before all others
-			if ($row['caller_route'] == "true")
-				$public_include_filename = "_".$public_order."_v_".$extension_name.".xml"; 
-			else
-				$public_include_filename = $public_order."_v_".$extension_name.".xml";
+
+			$public_include_filename = $public_order."_v_".$extension_name.".xml";
 			$fout = fopen($v_dialplan_public_dir."/".$public_include_filename,"w");
 			fwrite($fout, $tmp);
 			fclose($fout);
@@ -6039,6 +6055,9 @@ if (!function_exists('sync_package_freeswitch')) {
 	}
 }
 
+
+
+// -------------------- //
 // Added by T_Dot_Zilla
 function switch_select_destination_admin($select_type, $select_label, $select_name, $select_value, $select_style, $action='', $selected_destination) {
 	//select_type can be ivr, dialplan, or call_center_contact
