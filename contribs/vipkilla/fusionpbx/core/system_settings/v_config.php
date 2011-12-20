@@ -209,21 +209,21 @@
 		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_time_zone';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
-		$z++;
+		$z++;		
 		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_description';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 		$z++;
-                $apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_local_calls';
-                $apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
-                $apps[$x]['db'][$y]['fields'][$z]['description'] = '';
+		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_local_calls';
+		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
+		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 		$z++;
-                $apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_domestic_calls';
-                $apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
-                $apps[$x]['db'][$y]['fields'][$z]['description'] = '';
+		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_domestic_calls';
+		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
+		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 		$z++;
-                $apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_international_calls';
-                $apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
-                $apps[$x]['db'][$y]['fields'][$z]['description'] = '';
+		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_international_calls';
+		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
+		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 
 ?>

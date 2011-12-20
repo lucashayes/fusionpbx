@@ -59,10 +59,6 @@
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 		$y++;
-		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'lua_action_id';
-		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
-		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
-		$y++;		
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'extension';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
 		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
@@ -185,5 +181,14 @@
 		$y++;
 		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'sip_bypass_media';
 		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
-		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';	
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
+		$y++;
+		// if lua_route_enabled is true, override voicemail with lua_route_id as destination if called party does not answer
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'lua_route_enabled';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'text';
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
+		$y++;
+		$apps[$x]['db'][$z]['fields'][$y]['name'] = 'lua_route_id';
+		$apps[$x]['db'][$z]['fields'][$y]['type'] = 'numeric';
+		$apps[$x]['db'][$z]['fields'][$y]['description'] = '';
 ?>
