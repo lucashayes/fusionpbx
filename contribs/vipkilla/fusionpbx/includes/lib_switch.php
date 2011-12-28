@@ -250,9 +250,9 @@ function v_settings() {
 		$v_provisioning_http_dir = str_replace ("{program_dir}", $program_dir, $v_provisioning_http_dir);
 		$v_settings_array["v_provisioning_http_dir"] = $v_provisioning_http_dir;
 
-		$v_menu_guid = $row["v_menu_guid"];
-		$v_menu_guid = str_replace ("{program_dir}", $program_dir, $v_menu_guid);
-		$v_settings_array["v_menu_guid"] = $v_menu_guid;
+		$v_menu_uuid = $row["v_menu_uuid"];
+		$v_menu_uuid = str_replace ("{program_dir}", $program_dir, $v_menu_uuid);
+		$v_settings_array["v_menu_uuid"] = $v_menu_uuid;
 
 		break; //limit to 1 row
 	}
@@ -6038,8 +6038,6 @@ if (!function_exists('sync_package_freeswitch')) {
 		sync_package_v_fax();
 	}
 }
-
-
 
 // -------------------- //
 // Added by T_Dot_Zilla
