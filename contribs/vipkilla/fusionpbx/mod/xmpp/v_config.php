@@ -1,7 +1,7 @@
 <?php
 	//application details
 		$apps[$x]['name'] = "XMPP Manager";
-		$apps[$x]['guid'] = '740F1C0D-6D82-FCDE-3873-0FC9779789EC';
+		$apps[$x]['uuid'] = '740F1C0D-6D82-FCDE-3873-0FC9779789EC';
 		$apps[$x]['category'] = '';
 		$apps[$x]['subcategory'] = '';
 		$apps[$x]['version'] = '';
@@ -11,23 +11,29 @@
 
 	//menu details
 		$apps[$x]['menu'][0]['title']['en'] = 'XMPP Manager';
-		$apps[$x]['menu'][0]['guid'] = '1808365B-0F7C-7555-89D0-31B3D9A75ABB';
-		$apps[$x]['menu'][0]['parent_guid'] = 'BC96D773-EE57-0CDD-C3AC-2D91ABA61B55';
+		$apps[$x]['menu'][0]['uuid'] = '1808365B-0F7C-7555-89D0-31B3D9A75ABB';
+		$apps[$x]['menu'][0]['parent_uuid'] = 'BC96D773-EE57-0CDD-C3AC-2D91ABA61B55';
 		$apps[$x]['menu'][0]['category'] = 'internal';
 		$apps[$x]['menu'][0]['path'] = '/mod/xmpp/v_xmpp.php';
+		$apps[$x]['menu'][0]['groups'][] = 'user';
+		$apps[$x]['menu'][0]['groups'][] = 'admin';
 		$apps[$x]['menu'][0]['groups'][] = 'superadmin';
 
 	//permission details
 		$apps[$x]['permissions'][0]['name'] = 'xmpp_view';
+		$apps[$x]['permissions'][0]['groups'][] = 'admin';
 		$apps[$x]['permissions'][0]['groups'][] = 'superadmin';
 
 		$apps[$x]['permissions'][1]['name'] = 'xmpp_add';
+		$apps[$x]['permissions'][1]['groups'][] = 'admin';
 		$apps[$x]['permissions'][1]['groups'][] = 'superadmin';
 
 		$apps[$x]['permissions'][2]['name'] = 'xmpp_edit';
+		$apps[$x]['permissions'][2]['groups'][] = 'admin';
 		$apps[$x]['permissions'][2]['groups'][] = 'superadmin';
 
 		$apps[$x]['permissions'][3]['name'] = 'xmpp_delete';
+		$apps[$x]['permissions'][3]['groups'][] = 'admin';
 		$apps[$x]['permissions'][3]['groups'][] = 'superadmin';
 
 	//database details

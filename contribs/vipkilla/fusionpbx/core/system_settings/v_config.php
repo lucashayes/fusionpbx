@@ -1,7 +1,7 @@
 <?php
 	//application details
 		$apps[$x]['name'] = "System Settings";
-		$apps[$x]['guid'] = '249F01D4-535F-E399-0018-59F9C88D4F52';
+		$apps[$x]['uuid'] = '249F01D4-535F-E399-0018-59F9C88D4F52';
 		$apps[$x]['category'] = 'Core';
 		$apps[$x]['subcategory'] = '';
 		$apps[$x]['version'] = '';
@@ -10,8 +10,8 @@
 
 	//menu details
 		$apps[$x]['menu'][0]['title']['en'] = 'System Settings';
-		$apps[$x]['menu'][0]['guid'] = '03055A51-F8A2-6BDE-2A40-9743B2A2891F';
-		$apps[$x]['menu'][0]['parent_guid'] = '594D99C5-6128-9C88-CA35-4B33392CEC0F';
+		$apps[$x]['menu'][0]['uuid'] = '03055A51-F8A2-6BDE-2A40-9743B2A2891F';
+		$apps[$x]['menu'][0]['parent_uuid'] = '594D99C5-6128-9C88-CA35-4B33392CEC0F';
 		$apps[$x]['menu'][0]['category'] = 'internal';
 		$apps[$x]['menu'][0]['path'] = '/core/system_settings/v_system_settings.php';
 		$apps[$x]['menu'][0]['groups'][] = 'superadmin';
@@ -202,14 +202,15 @@
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 		$z++;
-		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_menu_guid';
+		$apps[$x]['db'][$y]['fields'][$z]['name']['text'] = 'v_menu_uuid';
+		$apps[$x]['db'][$y]['fields'][$z]['name']['deprecated'] = 'v_menu_guid';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
 		$z++;
 		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_time_zone';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
-		$z++;		
+		$z++;
 		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_description';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'text';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
@@ -225,5 +226,4 @@
 		$apps[$x]['db'][$y]['fields'][$z]['name'] = 'v_disable_international_calls';
 		$apps[$x]['db'][$y]['fields'][$z]['type'] = 'numeric';
 		$apps[$x]['db'][$y]['fields'][$z]['description'] = '';
-
 ?>

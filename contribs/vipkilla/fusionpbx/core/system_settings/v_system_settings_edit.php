@@ -86,7 +86,7 @@ else {
 		$v_provisioning_https_dir = check_str($_POST["v_provisioning_https_dir"]);
 		$v_provisioning_http_dir = check_str($_POST["v_provisioning_http_dir"]);
 		$v_template_name = check_str($_POST["v_template_name"]);
-		$v_menu_guid = check_str($_POST["v_menu_guid"]); 
+		$v_menu_uuid = check_str($_POST["v_menu_uuid"]); 
 		$v_time_zone = check_str($_POST["v_time_zone"]);
 		$v_description = check_str($_POST["v_description"]);
 		if(strlen($_POST["v_disable_local_calls"]))
@@ -158,7 +158,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 		//if (strlen($v_provisioning_https_dir) == 0) { $msg .= "Please provide: Provisioning HTTPS Directory<br>\n"; }
 		//if (strlen($v_provisioning_http_dir) == 0) { $msg .= "Please provide: Provisioning HTTP Directory<br>\n"; }
 		//if (strlen($v_template_name) == 0) { $msg .= "Please provide: Template Name<br>\n"; }
-		if (strlen($v_menu_guid) == 0) { $msg .= "Please provide: Menu<br>\n"; }
+		if (strlen($v_menu_uuid) == 0) { $msg .= "Please provide: Menu<br>\n"; }
 		//if (strlen($v_time_zone) == 0) { $msg .= "Please provide: Time Zone<br>\n"; }
 
 		if (strlen($msg) > 0 && strlen($_POST["persistformvar"]) == 0) {
@@ -220,7 +220,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 					$sql .= "v_provisioning_https_dir, ";
 					$sql .= "v_provisioning_http_dir, ";
 					$sql .= "v_template_name, ";
-					$sql .= "v_menu_guid, ";
+					$sql .= "v_menu_uuid, ";
 					$sql .= "v_time_zone, ";
 					$sql .= "v_description, ";
 					$sql .= "v_disable_local_calls, ";
@@ -269,7 +269,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 					$sql .= "'$v_provisioning_https_dir', ";
 					$sql .= "'$v_provisioning_http_dir', ";
 					$sql .= "'$v_template_name', ";
-					$sql .= "'$v_menu_guid', ";
+					$sql .= "'$v_menu_uuid', ";
 					$sql .= "'$v_time_zone', ";
 					$sql .= "'$v_description', ";
 					$sql .= "'$v_disable_local_calls', ";
@@ -336,7 +336,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 					$sql .= "v_provisioning_https_dir = '$v_provisioning_https_dir', ";
 					$sql .= "v_provisioning_http_dir = '$v_provisioning_http_dir', ";
 					$sql .= "v_template_name = '$v_template_name', ";
-					$sql .= "v_menu_guid = '$v_menu_guid', ";
+					$sql .= "v_menu_uuid = '$v_menu_uuid', ";
 					$sql .= "v_time_zone = '$v_time_zone', ";
 					$sql .= "v_description = '$v_description', ";
 					$sql .= "v_disable_local_calls = '$v_disable_local_calls', ";
@@ -447,7 +447,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
 			$v_provisioning_https_dir = $row["v_provisioning_https_dir"];
 			$v_provisioning_http_dir = $row["v_provisioning_http_dir"];
 			$v_template_name = $row["v_template_name"];
-			$v_menu_guid = $row["v_menu_guid"];
+			$v_menu_uuid = $row["v_menu_uuid"];
 			$v_time_zone = $row["v_time_zone"];
 			$v_description = $row["v_description"];
 			$v_disable_local_calls = $row["v_disable_local_calls"];
@@ -997,7 +997,7 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
         echo "          Menu: \n";
         echo "  </td>\n";
         echo "  <td class=\"vtable\" align='left'>\n";
-        echo "          <select id='v_menu_guid' name='v_menu_guid' class='formfld' style=''>\n";
+        echo "          <select id='v_menu_uuid' name='v_menu_uuid' class='formfld' style=''>\n";
         echo "          <option value=''></option>\n";
         $sql = "";
         $sql .= "select * from v_menus ";
@@ -1006,11 +1006,11 @@ if (count($_POST)>0 && strlen($_POST["persistformvar"]) == 0) {
         $prep_statement->execute();
         $result = $prep_statement->fetchAll();
         foreach ($result as &$row) {
-                if ($v_menu_guid == $row["menu_guid"]) {
-                        echo "          <option value='".$row["menu_guid"]."' selected='selected'>".$row["menu_language"]." - ".$row["menu_name"]."\n";
+                if ($v_menu_uuid == $row["menu_uuid"]) {
+                        echo "          <option value='".$row["menu_uuid"]."' selected='selected'>".$row["menu_language"]." - ".$row["menu_name"]."\n";
                 }
                 else {
-                        echo "          <option value='".$row["menu_guid"]."'>".$row["menu_language"]." - ".$row["menu_name"]."</option>\n";
+                        echo "          <option value='".$row["menu_uuid"]."'>".$row["menu_language"]." - ".$row["menu_name"]."</option>\n";
                 }
         }
         unset ($prep_statement);
