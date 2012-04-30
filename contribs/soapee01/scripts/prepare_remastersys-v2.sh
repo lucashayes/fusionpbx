@@ -181,6 +181,7 @@ fi
 #remastersys unauthenticated --force-yes
 
 if [ $DISTRO = "precise" ]; then
+	echo "PRECISE: getting remastersys remastersys-gui xinit lxde-core midori"
 	/usr/bin/apt-get -y install remastersys remastersys-gui xinit lxde-core midori
 
 else
@@ -664,10 +665,7 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 #/usr/bin/apt-get -y -q install ubiquity-frontend-gtk
 #/usr/bin/apt-get -y -q install metacity
 
-if [ $DISTRO = "precise" ]; then
-	
-	/usr/bin/apt-get -y -q install unity-2d
-fi
+
 /bin/echo
 /bin/echo
 /bin/echo
