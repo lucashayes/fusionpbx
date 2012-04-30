@@ -294,7 +294,7 @@ FusionPBX</P>
 		<LI><P STYLE="margin-bottom: 0in">It should currently be set to
 		dhcp.</P>
 	</UL>
-	<LI><P STYLE="margin-bottom: 0in">Read the <A HREF="http://wiki.fusionpbx.com/index.php?title=Easy_Ubuntu_10.04#Errata_2">Errata
+	<LI><P STYLE="margin-bottom: 0in">Read the <A HREF="http://wiki.fusionpbx.com/index.php/Easy_FusionPBX#Errata">Errata
 	List</A> 
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">Double Click the install icon 
@@ -565,17 +565,36 @@ if [ $DISTRO = "squeeze" ]; then
                 /bin/echo "64 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian ISO 64 BIT"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE ISO 64 BIT"':g \
                         -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_x86_64-beta-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         else
                 /bin/echo "32 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian ISO 32 BIT"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE ISO 32 BIT"':g \
                         -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_i386-beta-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
+elif [ $DISTRO = "precise" ]; then
+        #32 bit or 64 bit
+        /bin/uname -a | /bin/grep x86_64 > /dev/null
+        if [ $? -eq 0 ]; then
+                /bin/echo "64 bit machine"
+                /bin/sed -i /etc/remastersys.conf \
+                        -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 12.04LTS ISO 64 BIT"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_12.04_x86_64-beta-`date +%F`.iso"':g \
+                        -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
+        else
+                /bin/echo "32 bit machine"
+                /bin/sed -i /etc/remastersys.conf \
+                        -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 12.04LTS ISO 32 BIT"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_12.04_i386-beta-`date +%F`.iso"':g \
+                        -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
+        fi
+		
 else
 	#32 bit or 64 bit
 	/bin/uname -a | /bin/grep x86_64 > /dev/null
@@ -583,14 +602,14 @@ else
 		/bin/echo "64 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Ubuntu ISO 64 BIT"':g \
+			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 10.04LTS ISO 64 BIT"':g \
 			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_x86_64-beta-`date +%F`.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	else	
 		/bin/echo "32 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Ubuntu ISO 32 BIT"':g \
+			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 10.04LTS ISO 32 BIT"':g \
 			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_i386-beta-`date +%F`.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	fi
@@ -619,10 +638,10 @@ esac
 /bin/echo "  so we can upgrade the script post iso install,"
 /bin/echo "  before we pull down the latest fusionpbx."
 
-/bin/rm/install_fusionpbx*
-svn checkout https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/ /usr/src/
-chmod 755 /usr/src/ubuntu/install_fusionpbx.sh
-ln -s /usr/src/ubuntu/install_fusionpbx.sh /usr/local/bin/
+/bin/rm /usr/local/bin/install_fusionpbx*
+svn checkout https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/ /usr/src/install_fusionpbx
+chmod 755 /usr/src/install_fusionpbx/install_fusionpbx.sh
+ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 
 /bin/echo
 /bin/echo
@@ -632,6 +651,10 @@ ln -s /usr/src/ubuntu/install_fusionpbx.sh /usr/local/bin/
 /usr/bin/apt-get -y -q install ubiquity-frontend-gtk
 /usr/bin/apt-get -y -q install metacity
 
+if [ $DISTRO = "precise" ]; then
+	#gui fails without unity-2d
+	/usr/bin/apt-get -y -q install unity-2d
+fi
 /bin/echo
 /bin/echo
 /bin/echo
