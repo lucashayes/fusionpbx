@@ -166,7 +166,7 @@ else
 #		#add the following 
 		/bin/echo "add remastersys to sources"
 #		/bin/echo "#for remastersys" >> /etc/apt/sources.list
-		/bin/echo "deb http://www.geekconnection.org/remastersys/repository karmic/" >> /etc/apt/sources.list.d/remastersys.list
+		/bin/echo "deb http://www.geekconnection.org/remastersys/repository lucid/" >> /etc/apt/sources.list.d/remastersys.list
 #	else
 #		/bin/echo "Remastersys already added to sources.list"
 #	fi
