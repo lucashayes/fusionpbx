@@ -33,6 +33,7 @@
 #CHANGELOG
 #---------
 VERSION="Version 2 - 2011 January 27. WAF License"
+DISTRO="precise"
 
 #Version 2 - 2011 January 27
 #	TEST: Check for internet connection in this script and the .profile heredoc before wiping fusionpbx....
@@ -160,6 +161,11 @@ fi
 if [ $DISTRO = "squeeze" ]; then
 	echo "add remastersys for deb to sources.list.d"
 	echo "deb http://www.geekconnection.org/remastersys/repository squeeze/" > /etc/apt/sources.list.d/remastersys.list
+elif [ $DISTRO = "precise" ]; then
+	echo "add remasterys repo for precise"
+	wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
+	echo "deb http://www.remastersys.com/ubuntu precise main" > /etc/apt/sources.list.d/remastersys.list
+	
 else
 #	/bin/grep remastersys /etc/apt/sources.list > /dev/null
 #	if [ $? -ne 0 ]; then
@@ -173,7 +179,13 @@ else
 fi
 /usr/bin/apt-get update
 #remastersys unauthenticated --force-yes
-/usr/bin/apt-get -y --force-yes install remastersys xinit
+
+if [ $DISTRO = "precise" ]; then
+	/usr/bin/apt-get -y install remastersys remastersys-gui xinit lxde-core midori
+
+else
+	/usr/bin/apt-get -y --force-yes install remastersys xinit
+fi
 
 
 #if [ -a /usr/local/bin/motd_fusionpbx ]; then
@@ -646,13 +658,14 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 /bin/echo
 /bin/echo
 
-/bin/echo "might as well get the rest of the stuff for remastersys."
-/bin/echo "It's going to call it anyhow"
-/usr/bin/apt-get -y -q install ubiquity-frontend-gtk
-/usr/bin/apt-get -y -q install metacity
+#removed for precise/new remastersys way
+#/bin/echo "might as well get the rest of the stuff for remastersys."
+#/bin/echo "It's going to call it anyhow"
+#/usr/bin/apt-get -y -q install ubiquity-frontend-gtk
+#/usr/bin/apt-get -y -q install metacity
 
 if [ $DISTRO = "precise" ]; then
-	#gui fails without unity-2d
+	
 	/usr/bin/apt-get -y -q install unity-2d
 fi
 /bin/echo
@@ -676,6 +689,11 @@ fi
 /bin/echo "I hope you set up gnome like you like it"
 /bin/echo "You'll need to autostart midori to"
 /bin/echo "/usr/bin/midori file:///var/www/fusionpbx/instructions.html"
+/bin/echo "   if this is precise, vim ~/.config/autostart/midori.desktop [you may need mkdir ~/.config/autostart]"
+/bin/echo "          Then add the following to the file"
+/bin/echo "          [Desktop Entry]"
+/bin/echo "          Type=Application"
+/bin/echo "          Exec=midori file:///var/www/fusionpbx/instructions.html"
 /bin/echo "set the desktop background"
 /bin/echo "get rid of the fastuserswitching error"
 /bin/echo "I will wait while you do those things"
