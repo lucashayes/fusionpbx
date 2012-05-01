@@ -1,6 +1,10 @@
 #!/bin/bash
 #prepare_remastersys
 
+#This is ugly ugly ugly.  I never wanted to commit this really.
+#it's here so that in case I get hit by a truck, the project can
+#continue to build iso's.  Use at your own risk!
+
 #------------------------------------------------------------------------------
 #
 # "THE WAF LICENSE" (version 1)
@@ -34,16 +38,8 @@
 #---------
 VERSION="Version 2 - 2011 January 27. WAF License"
 DISTRO="precise"
-
-#Version 2 - 2011 January 27
-#	TEST: Check for internet connection in this script and the .profile heredoc before wiping fusionpbx....
-#	Add instructions.html heredoc
-#	moved splash.png to sourceforge.
-#	Change prompt to remind you to put midori at localhost/instructions.html
-#	Check install_fusionpbx filename, exits if incorrect.
-
-#Version 1 - 2010 December 26.
-#	First Cut
+PROFILERUN="/etc/skel/.profile"
+URLGETSCRIPT=#put the url on svn here
 
 #---------
 #VARIABLES
@@ -161,10 +157,13 @@ fi
 if [ $DISTRO = "squeeze" ]; then
 	echo "add remastersys for deb to sources.list.d"
 	echo "deb http://www.geekconnection.org/remastersys/repository squeeze/" > /etc/apt/sources.list.d/remastersys.list
+	PROFILERUN="/etc/skel/.profile"
+	
 elif [ $DISTRO = "precise" ]; then
 	echo "add remasterys repo for precise"
 	wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
 	echo "deb http://www.remastersys.com/ubuntu precise main" > /etc/apt/sources.list.d/remastersys.list
+	PROFILERUN="/etc/skel/.bash_profile"
 	
 else
 #	/bin/grep remastersys /etc/apt/sources.list > /dev/null
@@ -173,6 +172,7 @@ else
 		/bin/echo "add remastersys to sources"
 #		/bin/echo "#for remastersys" >> /etc/apt/sources.list
 		/bin/echo "deb http://www.geekconnection.org/remastersys/repository lucid/" >> /etc/apt/sources.list.d/remastersys.list
+		PROFILERUN="/etc/skel/.profile"
 #	else
 #		/bin/echo "Remastersys already added to sources.list"
 #	fi
@@ -183,6 +183,7 @@ fi
 if [ $DISTRO = "precise" ]; then
 	echo "PRECISE: getting remastersys remastersys-gui xinit lxde-core midori"
 	/usr/bin/apt-get -y install remastersys remastersys-gui xinit lxde-core midori
+	#try other gui. remastersys-gui was black and hard to read.
 
 else
 	/usr/bin/apt-get -y --force-yes install remastersys xinit
@@ -202,9 +203,13 @@ if [ $DISTRO = "squeeze" ]; then
 Thank you for trying FusionPBX and FreeSWITCH
 Help: IRC #fusionpbx on FreeNode
       www.fusionpbx.com
-The FreeSWITCH src was left off to save space.
-Git/build the latest by running
-  sudo install_fusionpbx install-freeswitch user
+
+The FreeSWITCH src was left off the iso to save space.
+Get the compiled Source code by running:
+	/usr/local/bin/getfs
+	
+You can then easily upgrade FreeSWITCH by running
+  sudo install_fusionpbx upgrade-freeswitch user
 
 Upgrade FusionPBX
   sudo install_fusionpbx upgrade-fusionpbx user
@@ -345,7 +350,7 @@ DELIM
 #if [ $? -ne 0 ]; then
 /bin/rm /etc/skel/.profile
 	#Put DELIM in ' ' to prevent `tty..` command from substituting "here document"
-/bin/cat > /etc/skel/.profile <<'DELIM'
+/bin/cat > $PROFILERUN <<'DELIM'
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -415,7 +420,12 @@ else
 		
 			case "$YESNO" in
 				[Yy]*)
-					/bin/echo "removing old directory.  We'll need sudo password"
+					/bin/echo "first let's get latest install script. We'll need sudo password"
+					/usr/bin/sudo /bin/rm /usr/local/bin/install_fusionpbx*
+					/usr/bin/sudo svn checkout https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/ /usr/src/install_fusionpbx
+					/usr/bin/sudo chmod 755 /usr/src/install_fusionpbx/install_fusionpbx.sh
+					/usr/bin/sudo ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
+					/bin/echo "removing old directory."
 					/usr/bin/sudo /bin/rm -R /var/www/fusionpbx
 					/bin/echo "running: sudo /usr/local/bin/install_fusionpbx install-fusionpbx user"
 					/usr/bin/sudo cd /usr/src/ubuntu/
@@ -432,6 +442,28 @@ else
 					/bin/echo "  You should also upgrade that script from svn (see wiki)"
 					/usr/bin/sudo /bin/rm /etc/fresh_fusion_install
 					/bin/echo "Thank you for Choosing FusionPBX"
+				;;
+			esac
+			
+			/bin/echo "FreeSWITCH source was left off of this iso to save space!"
+			/bin/echo "  IT takes some time to download and compile it, but it will"
+			/bin/echo "  leave you with an upgradable system if we do it."
+			/bin/echo "  If you say yes (recommended),"
+			/bin/echo "    THEN I WILL COMPILE THE VERSION"
+			/bin/echo "    CURRENTLY INSTALLED, and SWITCH BACK to LATEST."
+			/bin/echo "    Then you can run the script to upgrade freeswitch"
+			/bin/echo "    as normal. You can also run this later by calling:"
+			/bin/echo "      /usr/local/bin/getfs"
+			/bin/read -p "CONTINUE [Y/n]? " YESNO
+			
+			case "$YESNO" in
+				[Yy]*)
+						/bin/echo "Great! Getting FreeSWITCH source now."
+						/usr/local/bin/getfs
+				;;
+				
+				*)
+						/bin/echo "OK, get FreeSWITCH later with fsget."
 				;;
 			esac
 	
@@ -575,37 +607,41 @@ if [ $DISTRO = "squeeze" ]; then
         #32 bit or 64 bit
         /bin/uname -a | /bin/grep x86_64 > /dev/null
         if [ $? -eq 0 ]; then
+			ISONAME="fusionpbx_deb_x86_64-beta-`date +%F`"
                 /bin/echo "64 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian Squeeze x86_64"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_x86_64-beta-`date +%F`.iso"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         else
+			ISONAME="fusionpbx_deb_i386-beta-`date +%F`"
                 /bin/echo "32 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE i386"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_i386-beta-`date +%F`.iso"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
 elif [ $DISTRO = "precise" ]; then
         #32 bit or 64 bit
         /bin/uname -a | /bin/grep x86_64 > /dev/null
         if [ $? -eq 0 ]; then
+			ISONAME="fusionpbx_ub_1204_x86_64-`date +%F`"
                 /bin/echo "64 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS x86_64"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_1204_x86_64-`date +%F`.iso"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="ISONAME.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
 				#customiso = fusionpbx_ub_12.04_x86_64-beta-2012-04-26.iso ---- genisoimage volume id string too long.
         else
+			ISONAME="fusionpbx_ub_1204_i386-`date +%F`"
                 /bin/echo "32 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS i386"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_1204_i386-`date +%F`.iso"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
 		
@@ -613,21 +649,33 @@ else
 	#32 bit or 64 bit
 	/bin/uname -a | /bin/grep x86_64 > /dev/null
 	if [ $? -eq 0 ]; then
+		ISONAME="fusionpbx_ub_x86_64-beta-`date +%F`"
 		/bin/echo "64 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
 			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS x86_64"':g \
-			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_x86_64-beta-`date +%F`.iso"':g \
+			-e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	else	
+		ISONAME="fusionpbx_ub_i386-beta-`date +%F`"
 		/bin/echo "32 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
 			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS i386"':g \
-			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_i386-beta-`date +%F`.iso"':g \
+			-e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	fi
 fi
+
+#FOR getfs
+echo "ISONAME=$ISONAME" > /etc/fusion_iso.conf
+cd /usr/src/freeswitch
+FSGITVER=$(git log --pretty=oneline | head -n 1 | sed -e "s/\ .*//")
+echo "FSGITVER=$FSGITVER" >> /etc/fusion_iso.conf
+cp /usr/src/freeswitch/modules.conf /etc/freeswitch_iso_modules.conf
+
+wget $URLGETSCRIPT -O /usr/local/bin/getfs
+chmod 755 /usr/local/bin/getfs
 	
 /bin/echo "/usr/src/freeswitch is a very large directory."
 /bin/echo "It will fit on an CDROM. if you exclude it"
