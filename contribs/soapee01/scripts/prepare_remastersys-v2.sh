@@ -570,7 +570,7 @@ DELIM
 #DELIM
 
 #set up /etc/remastersys.conf
-
+#LIVECDLABEL is max 32 characters.
 if [ $DISTRO = "squeeze" ]; then
         #32 bit or 64 bit
         /bin/uname -a | /bin/grep x86_64 > /dev/null
@@ -578,14 +578,14 @@ if [ $DISTRO = "squeeze" ]; then
                 /bin/echo "64 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE ISO 64 BIT"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian Squeeze x86_64"':g \
                         -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_x86_64-beta-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         else
                 /bin/echo "32 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE ISO 32 BIT"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE i386"':g \
                         -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_deb_i386-beta-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
@@ -596,15 +596,16 @@ elif [ $DISTRO = "precise" ]; then
                 /bin/echo "64 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 12.04LTS ISO 64 BIT"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_12.04_x86_64-beta-`date +%F`.iso"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS x86_64"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_1204_x86_64-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
+				#customiso = fusionpbx_ub_12.04_x86_64-beta-2012-04-26.iso ---- genisoimage volume id string too long.
         else
                 /bin/echo "32 bit machine"
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 12.04LTS ISO 32 BIT"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_12.04_i386-beta-`date +%F`.iso"':g \
+                        -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS i386"':g \
+                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_1204_i386-`date +%F`.iso"':g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
 		
@@ -615,14 +616,14 @@ else
 		/bin/echo "64 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 10.04LTS ISO 64 BIT"':g \
+			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS x86_64"':g \
 			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_x86_64-beta-`date +%F`.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	else	
 		/bin/echo "32 bit machine"
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
-			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX - Ubuntu 10.04LTS ISO 32 BIT"':g \
+			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS i386"':g \
 			-e s:^CUSTOMISO=.*$:'CUSTOMISO="fusionpbx_ub_i386-beta-`date +%F`.iso"':g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	fi
@@ -734,6 +735,14 @@ read
 /bin/echo "done."
 
 exit 0
+
+#if all of the iso prep goes well, but the geniso fails, try this to save time.
+##!/bin/bash
+#CREATEISO="/usr/bin/genisoimage"
+#LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS x86_64"
+#WORKDIR="/home/remastersys/remastersys"
+#CUSTOMISO="fusion.iso"
+#$CREATEISO -iso-level 3 -r -V "$LIVECDLABEL" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o $WORKDIR/$CUSTOMISO "$WORKDIR/ISOTMP"
 
 #let's go ahead and add the extra stuff that remastersys wants on first run
 #not sure why they didn't make these dependencies.
