@@ -243,7 +243,10 @@ else
 /bin/echo "      www.fusionpbx.com"
 /bin/echo "The FreeSWITCH src was left off to save space. "
 /bin/echo "Git/build the latest by running"
-/bin/echo "  sudo install_fusionpbx install-freeswitch user"
+/bin/echo "  /usr/local/bin/getfs"
+/bin/echo
+/bin/echo "Then you can upgrade freeswitch as such:"
+/bin/echo "  sudo install_fusionpbx upgrade-freeswitch user"
 /bin/echo
 /bin/echo "Upgrade FusionPBX"
 /bin/echo "  sudo install_fusionpbx upgrade-fusionpbx user"
@@ -454,7 +457,7 @@ else
 			/bin/echo "    Then you can run the script to upgrade freeswitch"
 			/bin/echo "    as normal. You can also run this later by calling:"
 			/bin/echo "      /usr/local/bin/getfs"
-			/bin/read -p "CONTINUE [Y/n]? " YESNO
+			read -p "CONTINUE [Y/n]? " YESNO
 			
 			case "$YESNO" in
 				[Yy]*)
@@ -612,7 +615,7 @@ if [ $DISTRO = "squeeze" ]; then
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian Squeeze x86_64"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
+                        -e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         else
 			ISONAME="fusionpbx_deb_i386-beta-`date +%F`"
@@ -620,7 +623,7 @@ if [ $DISTRO = "squeeze" ]; then
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX Debian SQUEEZE i386"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
+                        -e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
 elif [ $DISTRO = "precise" ]; then
@@ -632,7 +635,7 @@ elif [ $DISTRO = "precise" ]; then
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS x86_64"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="ISONAME.iso"':g \
+                        -e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
 				#customiso = fusionpbx_ub_12.04_x86_64-beta-2012-04-26.iso ---- genisoimage volume id string too long.
         else
@@ -641,7 +644,7 @@ elif [ $DISTRO = "precise" ]; then
                 /bin/sed -i /etc/remastersys.conf \
                         -e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
                         -e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 12.04LTS i386"':g \
-                        -e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
+                        -e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
                         -e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g
         fi
 		
@@ -654,7 +657,7 @@ else
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
 			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS x86_64"':g \
-			-e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
+			-e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	else	
 		ISONAME="fusionpbx_ub_i386-beta-`date +%F`"
@@ -662,7 +665,7 @@ else
 		/bin/sed -i /etc/remastersys.conf \
 			-e s:^LIVEUSER=.*$:'LIVEUSER="fusionpbx"':g \
 			-e s:^LIVECDLABEL=.*$:'LIVECDLABEL="FusionPBX-Ubuntu 10.04LTS i386"':g \
-			-e s:^CUSTOMISO=.*$:'CUSTOMISO="$ISONAME.iso"':g \
+			-e s:^CUSTOMISO=.*$:CUSTOMISO=\"$ISONAME.iso\":g \
 			-e s,^LIVECDURL=.*$,'LIVECDURL="http://www.fusionpbx.com"',g 
 	fi
 fi
