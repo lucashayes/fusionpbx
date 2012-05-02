@@ -71,24 +71,26 @@ fi
 
 #Check for new version
 WHEREAMI=$(echo "`pwd`/`basename $0`")
-wget $URLGETSCRIPT -O /tmp/getfs.sh
+wget $URLGETSCRIPT -O /tmp/getfs.latest
 CURMD5=$(md5sum "$WHEREAMI" | sed -e "s/\ .*//")
 echo "The md5sum of the current script is: $CURMD5"
-NEWMD5=$(md5sum /tmp/getfs.sh | sed -e "s/\ .*//")
-echo "The md5sum of the latest script is: $CURMD5"
+NEWMD5=$(md5sum /tmp/getfs.latest | sed -e "s/\ .*//")
+echo "The md5sum of the latest script is: $NEWMD5"
 
 if [[ "$CURMD5" == "$NEWMD5" ]]; then
 	echo "files are the same, continuing"
 else
 	echo "There is a new version of this script."
 	echo "  It is PROBABLY a good idea use the new version"
-	echo "  the new file is saved in /tmp/getfs.sh"
+	echo "  the new file is saved in /tmp/getfs.latest"
 	echo "  to see the difference, run:"
-	echo "  diff -y /tmp/getfs.sh $WHEREAMI"
+	echo "  diff -y /tmp/getfs.latest $WHEREAMI"
 	read -p "Continue [y/N]? " YESNO
 	case $YESNO in
 		[Yy]*)
 			echo "OK, Continuing"
+			echo "  Deleting newest script in /tmp"
+			rm /tmp/getfs.latest
 		;;
 
 		*)

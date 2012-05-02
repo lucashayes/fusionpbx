@@ -39,7 +39,7 @@
 VERSION="Version 2 - 2011 January 27. WAF License"
 DISTRO="precise"
 PROFILERUN="/etc/skel/.profile"
-URLGETSCRIPT=#put the url on svn here
+URLGETSCRIPT="http://fusionpbx.googlecode.com/svn/contribs/soapee01/scripts/getfs.sh"
 
 #---------
 #VARIABLES
