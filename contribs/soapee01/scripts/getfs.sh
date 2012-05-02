@@ -30,7 +30,7 @@ CONFFILE="/etc/fusion_iso.conf"
 
 GITVER=$(grep FSGITVER $CONFFILE|sed -e "s/FSGITVER=//")
 MODCONF="/etc/freeswitch_iso_modules.conf"
-
+URLGETSCRIPT="http://fusionpbx.googlecode.com/svn/contribs/soapee01/scripts/getfs.sh"
 
 #---------------------
 #   ENVIRONMENT CHECKS
@@ -67,6 +67,35 @@ if [ ! -s /tmp/index.google ];then
 else
 	echo "Internet connection is working, continuing!"
 	/bin/rm /tmp/index.google
+fi
+
+#Check for new version
+WHEREAMI=$(echo "`pwd`/`basename $0`")
+wget $URLGETSCRIPT -O /tmp/getfs.sh
+CURMD5=$(md5sum "$WHEREAMI" | sed -e "s/\ .*//")
+echo "The md5sum of the current script is: $CURMD5"
+NEWMD5=$(md5sum /tmp/getfs.sh | sed -e "s/\ .*//")
+echo "The md5sum of the latest script is: $CURMD5"
+
+if [[ "$CURMD5" == "$NEWMD5" ]]; then
+	echo "files are the same, continuing"
+else
+	echo "There is a new version of this script."
+	echo "  It is PROBABLY a good idea use the new version"
+	echo "  the new file is saved in /tmp/getfs.sh"
+	echo "  to see the difference, run:"
+	echo "  diff -y /tmp/getfs.sh $WHEREAMI"
+	read -p "Continue [y/N]? " YESNO
+	case $YESNO in
+		[Yy]*)
+			echo "OK, Continuing"
+		;;
+
+		*)
+			echo "OK, Stopping."
+			exit 0
+		;;
+	esac
 fi
 
 
@@ -119,10 +148,6 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		#ldconfig culprit?
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Starting Bootstrap with -j"
-			if [ $DEBUG -eq 1 ]; then
-				/bin/echo
-				read -p "Press Enter to continue (check for errors)"
-			fi
 			/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
 		else 
 			/bin/echo "  singlecore processor detected. Starting Bootstrap sans -j"
@@ -152,7 +177,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		else
 			/bin/echo "build_modules" >> /tmp/install_fusion_status
 		fi
-	fi	
+
 	
 	#------------------------
 	# CONFIGURE FREESWITCH 
@@ -273,12 +298,6 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		fi
 	fi
 	
-	if [ $DEBUG -eq 1 ]; then
-		/bin/echo
-		read -p "Press Enter to continue (check for errors)"
-	fi
-	
-
 	#------------------------
 	# FREESWITCH  MOH
 	#------------------------	
@@ -314,16 +333,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		fi
 	fi
 	
-	if [ $DEBUG -eq 1 ]; then
-		/bin/echo
-		read -p "Press Enter to continue (check for errors)"
-	fi
-	
-	
 
-
-
-	
 	/bin/echo
 	/bin/echo
 	/bin/echo "FreeSWITCH Git/Compile Completed. Have Fun!"
@@ -337,60 +347,3 @@ fi
 rm /tmp/install_fusion_status
 echo "FreeSWITCH_SRC_INSTALLED=TRUE">>$CONFFILE
 exit 0
-
-
-####delete below...
-
-cd /usr/src
-git clone git://git.freeswitch.org/freeswitch.git
-echo
-echo "ok, we now have latest get."
-echo "  switch to iso revision $GITVER"
-git checkout $GITVER
-echo "Now copy modules.conf for freeswitch we used to build originally"
-cp $CONFFILE /usr/src/freeswitch/modules.conf
-echo "Bootstrap"
-
-cd /usr/src/freeswitch
-/usr/src/freeswitch/bootstrap
-echo "Run Configure"
-/usr/src/freeswitch/configure
-echo "Time for make"
-make
-echo "change git repo back to head"
-git reset --hard HEAD
-
-	#1gb for /usr/src/freeswitch
-	#remove sounds make clean, down to 879M
-	#find ./ -name "*.tar.gz" -exec rm {} \;
-		#847M
-		#rm zip 847M
-		#rm bz2 833M
-		#compressed: 292M
-		#size of /usr/src/freeswitch/.git = 84M
-		#	try with just .git?
-		#	can't figure out right now how to restore all from .git dir
-		#try pull same git rev, compile, then make current.
-		
-		#tested 5/1/12
-		#needs modules.conf as well...
-		#	revision in .git/logs/HEAD
-		#	try git clone git://git.freeswitch.org/freeswitch.git
-		#	git checkout revision
-		#	cp modules.conf
-		#	./bootstrap
-		#	./configure
-			
-		#	make
-		# 	fs_cli (original) version: version 1.1beta1 (git-acd3689 2012-04-30 17-39-53 +0000)
-		
-		#rm -r /usr/local/freeswitch/
-		#make isntall
-		# fs_cli (hope same) version: Version 1.1.beta1 (git-acd3689 2012-04-30 17-39-53 +0000)
-		#VERSIONS MATCH -> GOOD
-		#	git checkout HEAD #NO
-		#	git reset --hard HEAD
-		#	make current
-		#	VERSION: git-1c6d7ce 2012-04-30 19-37-59 -0500
-		#		verified on fishey this is last commit!
-		#
