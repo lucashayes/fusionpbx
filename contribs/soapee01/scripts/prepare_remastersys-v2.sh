@@ -143,17 +143,6 @@ else
 fi
 
 
-#if [ ! -e /usr/local/bin/install_fusionpbx ]; then 
-#	ls /usr/local/bin/install_fusionpbx* > /dev/null
-#	if [ $? -eq 0 ]; then 
-#		/bin/echo "install_fusionpbx script needs to be renamed"
-#		/bin/echo " to install_fusionpbx"
-#		/bin/echo "  LEAVE OFF the vx.y.z.sh STUFF"
-#		/bin/echo " exiting"
-#		exit 1
-#	fi
-#fi
-
 if [ $DISTRO = "squeeze" ]; then
 	echo "add remastersys for deb to sources.list.d"
 	echo "deb http://www.geekconnection.org/remastersys/repository squeeze/" > /etc/apt/sources.list.d/remastersys.list
@@ -192,10 +181,6 @@ else
 fi
 
 
-#if [ -a /usr/local/bin/motd_fusionpbx ]; then
-	#/bin/echo "motd_fusionpbx already done!"
-	#maybe we should remove it instead? make changes to this file and rerun?
-	#yep
 /bin/rm /usr/local/bin/motd_fusionpbx
 #else
 	/bin/echo "create motd"
@@ -264,23 +249,8 @@ if [ $DISTRO != "squeeze" ]; then
 	/bin/ln -s /usr/local/bin/motd_fusionpbx /etc/update-motd.d/99-z-motd-fusionpbx
 	/bin/echo "motd linked"
 fi
-#/bin/echo "overwrite remastersys defaults"
-#/bin/tar -xzvf  remastersys_conf.tar.gz -C /etc/
-#/bin/echo "overwrite skel"
-#/bin/tar -xzvf skel.tar.gz -C /etc/skel/
-
-#maybe install a browser?
-#epiphany-browser adds 50mb, firefox is adds 78mb, links2 adds 8mb
 #midori 26.5MB with javascript...
 /usr/bin/apt-get -y install midori
-
-#set a cookie...
-/bin/echo "FIRST TIME RUN. .profile should delete this." > /etc/fresh_fusion_install
-
-#works: set a cookie for ubiquity-Debconf chroot? install.
-#user can't delete from /etc move to skel and rm ~/ubiquity_fusion_install
-/bin/echo "FIRST TIME LOGIN. UBIQUITY INSTALLER SHOULD DELETE IT AT LOGIN" > /etc/skel/ubiquity_fusion_install
-/bin/chmod 666 /etc/skel/ubiquity_fusion_install
 
 #------------------
 # instructions.html
@@ -348,6 +318,18 @@ FusionPBX</P>
 DELIM
 
 #------------------
+# livecd check
+#------------------
+
+mkdir /pub
+chmod 777 /pub
+#set a cookie...
+/bin/echo "FIRST TIME RUN. .profile should delete this." > /pub/fresh_fusion_install
+/bin/echo "cookie set in /pub/fresh_fusion_install"
+chmod 666 /pub/fresh_fusion_install
+
+
+#------------------
 # .profile
 #------------------
 #set up /etc/skel/.profile
@@ -391,15 +373,11 @@ if [ -a /rofs ]; then
 		#/usr/bin/gconftool-2 -t string -s /desktop/gnome/background/picture_filename /etc/remastersys/isolinux/splash.png
 		/usr/bin/startx -- :0
 	fi
-#elif /usr/bin/pgrep ubiquity >/dev/null; then
-#	/bin/echo "Ubiquity Installer Running!"
-#above did not work still hangs at 98%
-elif [ -a ~/ubiquity_fusion_install ]; then
-	/bin/echo "UBIQUITY INSTALLATION!"
-	/bin/rm ~/ubiquity_fusion_install
+
 else
 
-	if [ -a /etc/fresh_fusion_install ]; then
+	#if [ -a /etc/fresh_fusion_install ]; then 
+	if [ -a /pub/fresh_fusion_install ]; then
 		#check for internet connection
 		/usr/bin/wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 		if [ ! -s /tmp/index.google ];then
@@ -407,12 +385,9 @@ else
 			/bin/rm /tmp/index.google
 		#exit 1 #this causes auto-logout. full loop with no internet. not good.
 		else
+			/bin/rm /pub/fresh_fusion_install
 			echo "Internet connection is working, continuing!"
 			/bin/rm /tmp/index.google
-		#fi #NO! if internet is there, to stuff, otherwise, don't.
-		#gconftool-2 --recursive-unset /apps/panel
-		#/usr/bin/gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.defaults --set --type list --list-type string #/apps/panel/global/disabled_applets "[OAFIID:GNOME_FastUserSwitchApplet]"
-		#/usr/bin/gconftool-2 -t string -s /desktop/gnome/background/picture_filename /etc/remastersys/isolinux/splash.png
 			/bin/echo "This appears to be the first login after install."
 			/bin/echo "The fine folks at FusionPBX would prefer you to"
 			/bin/echo "  use the latest version. I can upgrade you "
@@ -482,11 +457,6 @@ else
 				/bin/echo "OpenSSH Keys not saved during ISO build (for good reason)"
 				/bin/echo "Regenerating..."
 				/usr/bin/sudo /usr/sbin/dpkg-reconfigure openssh-server
-			fi
-		
-			if [ -a /etc/skel/ubiquity_fusion_install ]; then
-				/bin/echo "Removing installation cookie"
-				/usr/bin/sudo /bin/rm /etc/skel/ubiquity_fusion_install
 			fi
 		fi
 	else
@@ -560,6 +530,8 @@ else
 fi
 if [ $DISTRO = "squeeze" ]; then
 	wget http://sourceforge.net/projects/fusionpbxinstal/files/img/splash-screen-debian.png -O splash.png
+elif [ $DISTRO = "precise" ]; then
+	wget http://stubbornroses.com/splash-screen-ubuntu12.png -O splash.png	
 else
 	wget http://sourceforge.net/projects/fusionpbxinstal/files/img/splash-screen-ubuntu.png -O splash.png
 fi
@@ -713,13 +685,6 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 /bin/echo
 /bin/echo
 
-#removed for precise/new remastersys way
-#/bin/echo "might as well get the rest of the stuff for remastersys."
-#/bin/echo "It's going to call it anyhow"
-#/usr/bin/apt-get -y -q install ubiquity-frontend-gtk
-#/usr/bin/apt-get -y -q install metacity
-
-
 /bin/echo
 /bin/echo
 /bin/echo
@@ -767,6 +732,8 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 /bin/echo "  I will set the symlink when you come back"
 /bin/echo "    IF YOU FORGET TO DO THIS UBIQUITY IS BLACK"
 /bin/echo "    AND ILLEGIBLE ON THE INSTALL"
+/bin/echo 
+#/bin/echo "DO NOT REBOOT, or you will need to recreate /etc/ubiquity_fusion_install"
 read
 
 #this worked once, still might consider a hard copy.
@@ -822,8 +789,7 @@ exit 0
 #CUSTOMISO="fusion.iso"
 #$CREATEISO -iso-level 3 -r -V "$LIVECDLABEL" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o $WORKDIR/$CUSTOMISO "$WORKDIR/ISOTMP"
 
-#let's go ahead and add the extra stuff that remastersys wants on first run
-#not sure why they didn't make these dependencies.
+#stuff installed by remastersys.
 remove
 popularity-contest ubuntu-standard
 
