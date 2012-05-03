@@ -163,6 +163,7 @@ elif [ $DISTRO = "precise" ]; then
 	echo "add remasterys repo for precise"
 	wget -O - http://www.remastersys.com/ubuntu/remastersys.gpg.key | apt-key add -
 	echo "deb http://www.remastersys.com/ubuntu precise main" > /etc/apt/sources.list.d/remastersys.list
+	echo "we will use .bash_profile instead of .profile"
 	PROFILERUN="/etc/skel/.bash_profile"
 	
 else
@@ -352,7 +353,7 @@ DELIM
 #set up /etc/skel/.profile
 #/bin/grep fresh_fusion_install /etc/skel/.profile > /dev/null
 #if [ $? -ne 0 ]; then
-/bin/rm /etc/skel/.profile
+/bin/rm $PROFILERUN
 	#Put DELIM in ' ' to prevent `tty..` command from substituting "here document"
 /bin/cat > $PROFILERUN <<'DELIM'
 # ~/.profile: executed by the command interpreter for login shells.
@@ -789,7 +790,17 @@ fi
 /bin/rm /etc/skel/.config/midori/history.db
 /bin/rm /etc/skel/.config/midori/session.xbel
 
-
+if [ -f /etc/skel/.profile ]; then
+	echo "/etc/skel/.profile exists"
+else
+	echo "/etc/skel/.profile MISSING"
+fi
+	
+if [ -f /etc/skel/.bash_profile ]; then
+	echo "/etc/skel/.bash_profile exists"
+else
+	echo "/etc/skel/.bash_profile MISSING"
+fi
 
 
 /bin/echo "clearing apt archives to save space."
