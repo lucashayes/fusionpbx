@@ -183,7 +183,8 @@ fi
 if [ $DISTRO = "precise" ]; then
 	echo "PRECISE: getting remastersys remastersys-gui xinit lxde-core midori"
 	/usr/bin/apt-get -y install remastersys remastersys-gui xinit lxde-core midori
-	#try other gui. remastersys-gui was black and hard to read.
+	#for gtk-3 themes (can't read ubiquity install without)
+	/usr/bin/apt-get -y install lxappearance shimmer-themes
 
 else
 	/usr/bin/apt-get -y --force-yes install remastersys xinit
@@ -744,7 +745,9 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 /bin/echo "          [Desktop Entry]"
 /bin/echo "          Type=Application"
 /bin/echo "          Exec=midori file:///var/www/fusionpbx/instructions.html"
+/bin/echo
 /bin/echo "set the desktop background"
+/bin/echo
 /bin/echo "get rid of the fastuserswitching error"
 /bin/echo "I will wait while you do those things"
 /bin/echo "then I will copy the gnome settings to skel."
@@ -757,7 +760,20 @@ ln -s /usr/src/install_fusionpbx/install_fusionpbx.sh /usr/local/bin/
 /bin/echo  "red 101"
 /bin/echo  "Green 121"
 /bin/echo  "blue 93"
+/bin/echo 
+/bin/echo "For precise, run lxappearance, and select the"
+/bin/echo "  Greybird theme (/usr/share/themes/Greybird)"
+/bin/echo "  I will set the symlink when you come back"
+/bin/echo "    IF YOU FORGET TO DO THIS UBIQUITY IS BLACK"
+/bin/echo "    AND ILLEGIBLE ON THE INSTALL"
 read
+
+#this worked once, still might consider a hard copy.
+if [ $DISTRO = "precise" ]; then
+	/bin/echo "setting symlink"
+	su fusionpbx -c "ln -s /usr/share/themes/Greybird/gtk-3.0 ~/.config/gtk-3.0"
+fi
+
 
 #copy the latest .gconf .gnome2 directories to skel
 #no, let's just build what we need from this script
