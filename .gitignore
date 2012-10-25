@@ -1,0 +1,7 @@
+#eclipse metadata
+.metadata/
+.buildpath
+.project
+.settings/
+fusionpbx/nbproject
+fusionpbx/.idea
